@@ -1,3 +1,4 @@
+//main.cpp
 #include "utils/DataTable.hpp"
 #include <iostream>
 #include <vector>
@@ -15,14 +16,15 @@ int main() {
         std::cout << " - " << name << "\n";
     }
     */
-    std::vector<unsigned> topology = {2, 4, 1};
-    Network myNet(topology);
+    std::vector<unsigned> topology = {2, 7, 1};
+    Network myNet(topology, ActivationType::Sigmoid, ErrorType::MeanSquaredError);
 
     std::vector<double> inputValues, targetValues, resultValues;
-    unsigned epochs = 40;
+    unsigned epochs = 100;
     std::vector<double> epochResults;
 
     for(unsigned epochCount = 0; epochCount < epochs; ++epochCount) {
+        std::vector<double> tempResults;
         std::cout << "Starting training epoch " << epochCount << "/" << epochs << std::endl; 
         for(unsigned u = 0; u < table.rowCount(); ++u) {
             auto row = table.getRow(u);
@@ -41,8 +43,11 @@ int main() {
             std::cout << "target: " << targetValues[0] << ".0 " << std::endl;
             myNet.backPropagate(targetValues);
             
-            std::cout << "Network recent average error: " << myNet.getRecentAverageError() << std::endl;
+            double tempError = myNet.getRecentAverageError();
+            std::cout << "RAE (Recent Average Error): " << tempError << std::endl;
+            tempResults.push_back(tempError);
         }
+        std::cout << "From: " << tempResults[0] << " to " << tempResults[tempResults.size()-1] << std::endl;
         epochResults.push_back(myNet.getRecentAverageError());
     }
     std::cout << "DONE" << std::endl;
